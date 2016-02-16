@@ -1,0 +1,3 @@
+﻿How to build Elytra:
+
+sudo make -C ArduCopter navio

@@ -1,0 +1,121 @@
+/*******************************************************************************
+*
+*   i2c.c
+*
+*   Copyright (c) 2013 Shahrooz Shahparnia (sshahrooz@gmail.com)
+*
+*   Description:
+*   i2c is a command-line utility for executing i2c commands with the 
+*   Broadcom bcm2835.  It was developed and tested on a Raspberry Pi single-board
+*   computer model B.  The utility is based on the bcm2835 C library developed
+*   by Mike McCauley of Open System Consultants, http://www.open.com.au/mikem/bcm2835/.
+*
+*   Invoking spincl results in a read or write I2C transfer.  Options include the
+*   the I2C clock frequency, read/write, address, and port initialization/closing
+*   procedures.  The command usage and command-line parameters are described below
+*   in the showusage function, which prints the usage if no command-line parameters
+*   are included or if there are any command-line parameter errors.  Invoking i2c 
+*   requires root privilege.
+*
+*   This file contains the main function as well as functions for displaying
+*   usage and for parsing the command line.
+*
+*   Open Source Licensing GNU GPLv3
+*
+*   Building:
+* After installing bcm2835, you can build this 
+* with something like:
+* gcc -o i2c i2c.c -l bcm2835
+* sudo ./i2c
+*
+* Or you can test it before installing with:
+* gcc -o i2c -I ../../src ../../src/bcm2835.c i2c.c
+* sudo ./i2c
+*
+*   History:
+*   11/05    VERSION 1.0.0: Original
+*
+*      User input parsing (comparse) and showusage\
+*      have been adapted from: http://ipsolutionscorp.com/raspberry-pi-spi-utility/
+*      mostly to keep consistence with the spincl tool usage.
+*
+*      Compile with: gcc -o i2c i2c.c bcm2835.c
+*
+*      Examples:
+*
+*           Set up ADC (Arduino: ADC1015)
+*           sudo ./i2c -s72 -dw -ib 3 0x01 0x44 0x00 (select config register, setup mux, etc.)
+*           sudo ./i2c -s72 -dw -ib 1 0x00 (select ADC data register)
+*
+*           Bias DAC (Arduino: MCP4725) at some voltage
+*           sudo ./i2c -s99 -dw -ib 3 0x60 0x7F 0xF0 (FS output is with 0xFF 0xF0)
+*           Read ADC convergence result
+*           sudo ./i2c -s72 -dr -ib 2 (FS output is 0x7FF0 with PGA1 = 1)
+*  
+*      In a DAC to ADC loop back typical results are:
+*
+*      DAC    VOUT   ADC
+*      7FFh   1.6V   677h                    Note ratio is FS_ADC*PGA_GAIN/FS_DAC = 4.096/3.3 = 1.23
+*      5FFh   1.2V   4DCh
+*      8F0h   1.8V   745h
+*      9D0h   2V     7EAh
+*      000h   10mV   004h
+*
+********************************************************************************/
+
+#include <bcm2835.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include "LPS331.h"
+
+int main(int argc, char **argv) {
+
+    printf("Running ... \n");
+    
+    if (!bcm2835_init()) return 1;
+      
+    // I2C begin if specified    
+    
+    
+    
+    /*if (mode == MODE_READ) {
+    	for (i=0; i<MAX_LEN; i++) buf[i] = 'n';
+    	data = bcm2835_i2c_read(buf, len);
+    	printf("Read Result = %d\n", data);   
+    	for (i=0; i<MAX_LEN; i++) {
+    		if(buf[i] != 'n') printf("Read Buf[%d] = %x\n", i, buf[i]);
+	}    
+    }
+    if (mode == MODE_WRITE) {
+    	data = bcm2835_i2c_write(wbuf, len);
+    	printf("Write Result = %d\n", data);
+    }   */
+    
+    LPS331 barometer;
+    
+    if (barometer.autoDetectAddress())
+    {
+		printf("Baro found \n");
+	}
+	else
+	{
+		printf("Baro not found \n");
+	}
+	barometer.begin();
+	
+	 float pressure = barometer.readPressureMillibars();
+  // создаём переменную и присваиваем ей значения высоты над уровнем море
+  float altitude = barometer.pressureToAltitudeMeters(pressure);
+  // создаём переменную и присваиваем ей температуру окружающей среды
+  float temperature = barometer.readTemperatureC();
+	  
+	  printf("%f %f\n",pressure,temperature);
+	
+    // This I2C end is done after a transfer if specified
+    bcm2835_close();
+    printf("... done!\n");
+    return 0;
+}
+
