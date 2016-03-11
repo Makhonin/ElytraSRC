@@ -111,8 +111,10 @@ void setServo(uint8_t num, uint16_t pwm) //angle from 1000 to 2000
   //hal.console->printf("PWM2: %lu",pwm2d);
  // writeRegg2(LED_ON_L(num),LOW_PART(0));
   //writeRegg2(LED_ON_H(num),HIGH_PART(0));
-  writeRegg2(LED_OFF_L(num),LOW_PART(pwm2d));
-  writeRegg2(LED_OFF_H(num),HIGH_PART(pwm2d));
+
+  //UNCOMMENT PLS
+  //writeRegg2(LED_OFF_L(num),LOW_PART(pwm2d));
+  //writeRegg2(LED_OFF_H(num),HIGH_PART(pwm2d));
 }
 
 #endif 

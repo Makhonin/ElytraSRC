@@ -261,6 +261,24 @@ public:
     // user settable parameters
     static const struct AP_Param::GroupInfo var_info[];
 
+	int16_t get_conversion_function()
+	{
+	  int16_t conv;
+
+	  if (g.p_conversion<1100)
+		return 0;
+
+	  if (g.p_conversion>1500)
+		return 1000;
+
+	  conv = 1000-(1500-g.p_conversion)/4*10;  //Min 1100 Max 1900 -> (max-x)/800 Default 1900
+  
+	  conv =constrain_int16(conv, 0, 1000);
+  
+	  return conv;
+	}
+
+
 protected:
 
     // attitude control flags
