@@ -84,6 +84,27 @@ void AC_AttitudeControl::relax_bf_rate_controller()
     _pid_rate_roll.reset_I();
     _pid_rate_pitch.reset_I();
     _pid_rate_yaw.reset_I();
+
+    _pid_rate_roll.reset_I();
+    _pid_rate_pitch.reset_I();
+    _pid_rate_yaw.reset_I();
+
+	_pi_stabilize_roll.reset_I();
+	_pi_stabilize_pitch.reset_I();
+	_pi_stabilize_yaw.reset_I();
+
+	_pi_stabilize_roll_tilt.reset_I();
+	_pi_stabilize_pitch_tilt.reset_I();
+	_pi_stabilize_yaw_tilt.reset_I();
+
+	_pid2_rate_roll.reset_I();
+    _pid2_rate_pitch.reset_I();
+    _pid2_rate_yaw.reset_I();
+
+	_pid2_rate_roll_tilt.reset_I();
+    _pid2_rate_pitch_tilt.reset_I();
+    _pid2_rate_yaw_tilt.reset_I();
+
 }
 
 // shifts earth frame yaw target by yaw_shift_cd.  yaw_shift_cd should be in centi-degreesa and is added to the current target heading
@@ -414,14 +435,23 @@ void AC_AttitudeControl::rate_bf_roll_pitch_yaw(float roll_rate_bf, float pitch_
 // rate_controller_run - run lowest level body-frame rate controller and send outputs to the motors
 //      should be called at 100hz or more
 //
+
+//AEROXO CHANGED FOR TILTROTOR!!!
+
 void AC_AttitudeControl::rate_controller_run()
 {
     // call rate controllers and send output to motors object
     // To-Do: should the outputs from get_rate_roll, pitch, yaw be int16_t which is the input to the motors library?
     // To-Do: skip this step if the throttle out is zero?
-    _motors.set_roll(rate_bf_to_motor_roll(_rate_bf_target.x));
-    _motors.set_pitch(rate_bf_to_motor_pitch(_rate_bf_target.y));
-    _motors.set_yaw(rate_bf_to_motor_yaw(_rate_bf_target.z));
+    /*_motors.set_roll(aeroxo_rate_bf_to_motor_roll(_rate_bf_target.x));
+    _motors.set_pitch(aeroxo_rate_bf_to_motor_pitch(_rate_bf_target.y));
+    _motors.set_yaw(aeroxo_rate_bf_to_motor_yaw(_rate_bf_target.z));*/
+
+	//TODO add  _angle_bf_error inside
+
+	_motors.set_roll(aeroxo_rate_bf_to_motor_roll(0));
+    _motors.set_pitch(aeroxo_rate_bf_to_motor_pitch(0));
+    _motors.set_yaw(aeroxo_rate_bf_to_motor_yaw(0));
 }
 
 //
@@ -569,7 +599,43 @@ void AC_AttitudeControl::update_rate_bf_targets()
 //
 
 // rate_bf_to_motor_roll - ask the rate controller to calculate the motor outputs to achieve the target rate in centi-degrees / second
+
+//TODO RESTORE PID INPUT!
+
 float AC_AttitudeControl::rate_bf_to_motor_roll(float rate_target_cds)
+{
+    float p,i,d;            // used to capture pid values for logging
+    float current_rate;     // this iteration's rate
+    float rate_error;       // simply target_rate - current_rate
+
+    // get current rate
+    // To-Do: make getting gyro rates more efficient?
+    current_rate = (_ahrs.get_gyro().x * AC_ATTITUDE_CONTROL_DEGX100);
+
+    // calculate error and call pid controller
+    rate_error = rate_target_cds - current_rate;
+    _pid_rate_roll.set_input_filter_d(rate_error);
+    _pid_rate_roll.set_desired_rate(rate_target_cds);
+
+    // get p value
+    p = _pid_rate_roll.get_p();
+
+    // get i term
+    i = _pid_rate_roll.get_integrator();
+
+    // update i term as long as we haven't breached the limits or the I term will certainly reduce
+    if (!_motors.limit.roll_pitch || ((i>0&&rate_error<0)||(i<0&&rate_error>0))) {
+        i = _pid_rate_roll.get_i();
+    }
+
+    // get d term
+    d = _pid_rate_roll.get_d();
+
+    // constrain output and return
+    return constrain_float((p+i+d), -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX);
+}
+
+float AC_AttitudeControl::aeroxo_rate_bf_to_motor_roll(float rate_target_cds)
 {
     float p,i,d;            // used to capture pid values for logging
     float current_rate;     // this iteration's rate
@@ -636,8 +702,75 @@ float AC_AttitudeControl::rate_bf_to_motor_pitch(float rate_target_cds)
     return constrain_float((p+i+d), -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX);
 }
 
+float AC_AttitudeControl::aeroxo_rate_bf_to_motor_pitch(float rate_target_cds)
+{
+    float p,i,d;            // used to capture pid values for logging
+    float current_rate;     // this iteration's rate
+    float rate_error;       // simply target_rate - current_rate
+
+    // get current rate
+    // To-Do: make getting gyro rates more efficient?
+    current_rate = (_ahrs.get_gyro().y * AC_ATTITUDE_CONTROL_DEGX100);
+
+    // calculate error and call pid controller
+    rate_error = rate_target_cds - current_rate;
+    _pid_rate_pitch.set_input_filter_d(rate_error);
+    _pid_rate_pitch.set_desired_rate(rate_target_cds);
+
+    // get p value
+    p = _pid_rate_pitch.get_p();
+
+    // get i term
+    i = _pid_rate_pitch.get_integrator();
+
+    // update i term as long as we haven't breached the limits or the I term will certainly reduce
+    if (!_motors.limit.roll_pitch || ((i>0&&rate_error<0)||(i<0&&rate_error>0))) {
+        i = _pid_rate_pitch.get_i();
+    }
+
+    // get d term
+    d = _pid_rate_pitch.get_d();
+
+    // constrain output and return
+    return constrain_float((p+i+d), -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX);
+}
+
 // rate_bf_to_motor_yaw - ask the rate controller to calculate the motor outputs to achieve the target rate in centi-degrees / second
 float AC_AttitudeControl::rate_bf_to_motor_yaw(float rate_target_cds)
+{
+    float p,i,d;            // used to capture pid values for logging
+    float current_rate;     // this iteration's rate
+    float rate_error;       // simply target_rate - current_rate
+
+    // get current rate
+    // To-Do: make getting gyro rates more efficient?
+    current_rate = (_ahrs.get_gyro().z * AC_ATTITUDE_CONTROL_DEGX100);
+
+    // calculate error and call pid controller
+    rate_error  = rate_target_cds - current_rate;
+    _pid_rate_yaw.set_input_filter_all(rate_error);
+    _pid_rate_yaw.set_desired_rate(rate_target_cds);
+
+    // get p value
+    p = _pid_rate_yaw.get_p();
+
+    // get i term
+    i = _pid_rate_yaw.get_integrator();
+
+    // update i term as long as we haven't breached the limits or the I term will certainly reduce
+    if (!_motors.limit.yaw || ((i>0&&rate_error<0)||(i<0&&rate_error>0))) {
+        i = _pid_rate_yaw.get_i();
+    }
+
+    // get d value
+    d = _pid_rate_yaw.get_d();
+
+    // constrain output and return
+    return constrain_float((p+i+d), -AC_ATTITUDE_RATE_YAW_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_YAW_CONTROLLER_OUT_MAX);
+}
+
+// rate_bf_to_motor_yaw - ask the rate controller to calculate the motor outputs to achieve the target rate in centi-degrees / second
+float AC_AttitudeControl::aeroxo_rate_bf_to_motor_yaw(float rate_target_cds)
 {
     float p,i,d;            // used to capture pid values for logging
     float current_rate;     // this iteration's rate

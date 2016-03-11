@@ -49,6 +49,7 @@ public:
 
     // add_motor using separate roll and pitch factors (for asymmetrical frames) and prop direction
     void                add_motor(int8_t motor_num, float roll_factor_in_degrees, float pitch_factor_in_degrees, float yaw_factor, uint8_t testing_order);
+	void                add_motor2(int8_t motor_num, float angle_degrees, float yaw_factor, uint8_t testing_order);
 
     // remove_motor
     void                remove_motor(int8_t motor_num);
@@ -65,12 +66,21 @@ public:
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
     virtual uint16_t    get_motor_mask();
 
+	void                set_conv(int16_t conv)
+	{
+		m_Conv=conv;
+	}
+
 protected:
     // output - sends commands to the motors
     void                output_armed_stabilizing();
     void                output_armed_not_stabilizing();
     void                output_disarmed();
 
+	int16_t get_conv_function()
+	{
+		return m_Conv;
+	}
     // add_motor using raw roll, pitch, throttle and yaw factors
     void                add_motor_raw(int8_t motor_num, float roll_fac, float pitch_fac, float yaw_fac, uint8_t testing_order);
 
@@ -78,6 +88,6 @@ protected:
     float               _pitch_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to pitch
     float               _yaw_factor[AP_MOTORS_MAX_NUM_MOTORS];  // each motors contribution to yaw (normally 1 or -1)
     uint8_t             _test_order[AP_MOTORS_MAX_NUM_MOTORS];  // order of the motors in the test sequence
+	int16_t m_Conv;
 };
-
 #endif  // AP_MOTORSMATRIX

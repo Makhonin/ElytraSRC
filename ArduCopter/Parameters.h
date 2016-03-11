@@ -4,7 +4,8 @@
 #define PARAMETERS_H
 
 #include <AP_Common.h>
-
+#include "AC_PID2.h"
+#include "APM_PI2.h"
 // Global parameter class.
 //
 class Parameters {
@@ -463,6 +464,14 @@ public:
     RC_Channel_aux          rc_14;
 #endif
 
+		//Conversion
+	float               p_conversion=1500.0f;
+	//Servo parameters
+	int32_t roll_angle2;
+	int32_t yaw_angle2;
+	int32_t pitch_angle2;
+
+
     AP_Int16                rc_speed; // speed of fast RC Channels in Hz
 
     // Acro parameters
@@ -482,6 +491,15 @@ public:
     AC_PID                  pid_rate_roll;
     AC_PID                  pid_rate_pitch;
     AC_PID                  pid_rate_yaw;
+
+
+	AC_PID2                  pid2_rate_roll;
+    AC_PID2                  pid2_rate_pitch;
+    AC_PID2                  pid2_rate_yaw;
+
+	AC_PID2                  pid2_rate_roll_tilt;
+    AC_PID2                  pid2_rate_pitch_tilt;
+    AC_PID2                  pid2_rate_yaw_tilt;
 #endif
     AC_PI_2D                pi_vel_xy;
 
@@ -493,6 +511,14 @@ public:
     AC_P                    p_stabilize_pitch;
     AC_P                    p_stabilize_yaw;
     AC_P                    p_alt_hold;
+
+	APM_PI2                  pi_stabilize_roll;
+	APM_PI2                  pi_stabilize_pitch;
+	APM_PI2                  pi_stabilize_yaw;
+
+    APM_PI2                  pi_stabilize_roll_tilt;
+	APM_PI2                  pi_stabilize_pitch_tilt;
+	APM_PI2                  pi_stabilize_yaw_tilt;
 
     // Autotune
     AP_Int8                 autotune_axis_bitmask;
@@ -539,6 +565,7 @@ public:
         rc_14               (CH_14),
 #endif
 
+
         // PID controller	    initial P	      initial I         initial D       initial imax        initial filt hz     pid rate
         //---------------------------------------------------------------------------------------------------------------------------------
 #if FRAME_CONFIG == HELI_FRAME
@@ -549,6 +576,15 @@ public:
         pid_rate_roll           (RATE_ROLL_P,     RATE_ROLL_I,      RATE_ROLL_D,    RATE_ROLL_IMAX,     RATE_ROLL_FILT_HZ,  MAIN_LOOP_SECONDS),
         pid_rate_pitch          (RATE_PITCH_P,    RATE_PITCH_I,     RATE_PITCH_D,   RATE_PITCH_IMAX,    RATE_PITCH_FILT_HZ, MAIN_LOOP_SECONDS),
         pid_rate_yaw            (RATE_YAW_P,      RATE_YAW_I,       RATE_YAW_D,     RATE_YAW_IMAX,      RATE_YAW_FILT_HZ,   MAIN_LOOP_SECONDS),
+
+		pid2_rate_roll           (3.477f,           0,            0,            0), //FIX IN MAVLINK
+	  pid2_rate_pitch          (3.933f,          0,           0,           0), //FIX IN MAVLINK
+	  pid2_rate_yaw            (4.674f,            0,             0,            0), //FIX IN MAVLINK
+
+		pid2_rate_roll_tilt           (4.5,           12,            0,            0), // Tested new D param for roll.
+		pid2_rate_pitch_tilt          (6,          16,           0,           0),
+		pid2_rate_yaw_tilt            (2.0f,            0,             0,             0),
+
 #endif
 
         pi_vel_xy               (VEL_XY_P,        VEL_XY_I,                         VEL_XY_IMAX,        VEL_XY_FILT_HZ,     WPNAV_LOITER_UPDATE_TIME),
@@ -563,6 +599,15 @@ public:
         p_stabilize_roll        (STABILIZE_ROLL_P),
         p_stabilize_pitch       (STABILIZE_PITCH_P),
         p_stabilize_yaw         (STABILIZE_YAW_P),
+
+		pi_stabilize_roll       (0.123f,      1.0f,       500000), // :1000
+		pi_stabilize_pitch      (0.14f,     1.0f,      500000),
+		pi_stabilize_yaw        (4.674f,       1.0f,        350000), //FIX IN MAVLINK
+
+		pi_stabilize_roll_tilt       (9,      1.0f,       500000),
+		pi_stabilize_pitch_tilt      (12.00f,     1.0f,      500000),
+		pi_stabilize_yaw_tilt        (1.0f,       1.0f,        500000),
+
 
         p_alt_hold              (ALT_HOLD_P)
     {

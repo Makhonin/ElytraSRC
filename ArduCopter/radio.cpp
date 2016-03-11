@@ -115,7 +115,38 @@ void Copter::read_radio()
 
         // update output on any aux channels, for manual passthru
         RC_Channel_aux::output_ch_all();
-    }else{
+
+		/* START TILTROTOR CODE */
+
+			uint16_t periods[8];
+			hal.rcin->read(periods,8);
+
+			const long CONV_THROTTLE = 1500;
+
+
+			/*g.roll_angle2 = (wrap_180_cd(get_rate_roll(roll_rate_target_bf)))*(1000-get_conversion_function())/4500*2;//get_rate_roll(roll_rate_target_bf);
+			g.yaw_angle2 = (wrap_180_cd(get_rate_yaw(yaw_rate_target_bf)))*(get_conversion_function())/4500*20;
+    
+			g.pitch_angle2 = (wrap_180_cd(get_rate_pitch(pitch_rate_target_bf)))*(1000-get_conversion_function())/4500*4;
+			g.roll_angle2 = constrain_int32(g.roll_angle2, -250,250);
+			g.yaw_angle2 = constrain_int32(g.yaw_angle2, -166, 166);*/
+
+			if ( periods[7] > CONV_THROTTLE )
+			{
+			  g.p_conversion=1500.0f;
+			}
+			else
+			{
+			  //10.10.2014
+			  if (g.p_conversion > periods[7])
+			  {
+				g.p_conversion+=(periods[7]-g.p_conversion)*0.1f;
+			  }
+			}  
+		/* END TILTROTOR CODE */
+    }
+	else
+	{
         uint32_t elapsed = tnow_ms - last_update_ms;
         // turn on throttle failsafe if no update from the RC Radio for 500ms or 2000ms if we are using RC_OVERRIDE
         if (((!failsafe.rc_override_active && (elapsed >= FS_RADIO_TIMEOUT_MS)) || (failsafe.rc_override_active && (elapsed >= FS_RADIO_RC_OVERRIDE_TIMEOUT_MS))) &&
@@ -124,6 +155,13 @@ void Copter::read_radio()
             set_failsafe_radio(true);
         }
     }
+
+
+	
+
+    
+  
+
 }
 
 #define FS_COUNTER 3        // radio failsafe kicks in after 3 consecutive throttle values below failsafe_throttle_value

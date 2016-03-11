@@ -27,6 +27,7 @@ extern const AP_HAL::HAL& hal;
 // Init
 void AP_MotorsMatrix::Init()
 {
+	m_Conv=1000;
     // setup the motors
     setup_motors();
 
@@ -217,7 +218,7 @@ void AP_MotorsMatrix::output_armed_stabilizing()
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
             rpy_out[i] = roll_pwm * _roll_factor[i] * get_compensation_gain() +
-                            pitch_pwm * _pitch_factor[i] * get_compensation_gain();
+                            pitch_pwm * _pitch_factor[i] * get_compensation_gain()+yaw_pwm*_yaw_factor[i]*(1000-m_Conv)/1000;
 
             // record lowest roll pitch command
             if (rpy_out[i] < rpy_low) {
@@ -269,8 +270,8 @@ void AP_MotorsMatrix::output_armed_stabilizing()
     rpy_high = 0;
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
-            rpy_out[i] =    rpy_out[i] +
-                            yaw_allowed * _yaw_factor[i];
+            //rpy_out[i] =    rpy_out[i] +
+             //               yaw_allowed * _yaw_factor[i];
 
             // record lowest roll+pitch+yaw command
             if( rpy_out[i] < rpy_low ) {
@@ -426,6 +427,17 @@ void AP_MotorsMatrix::add_motor(int8_t motor_num, float roll_factor_in_degrees, 
         cosf(radians(roll_factor_in_degrees + 90)),
         cosf(radians(pitch_factor_in_degrees)),
         yaw_factor,
+        testing_order);
+}
+
+void AP_MotorsMatrix::add_motor2(int8_t motor_num, float angle_degrees, float yaw_factor, uint8_t testing_order)
+{
+    // call raw motor set-up method
+     add_motor_raw(
+        motor_num,
+        cosf(radians(angle_degrees + 90))*sqrt(2),               // roll factor
+        cosf(radians(angle_degrees))*sqrt(2),                    // pitch factor
+        yaw_factor,                                      // yaw factor
         testing_order);
 }
 

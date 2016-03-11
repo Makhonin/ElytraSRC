@@ -14,6 +14,8 @@
 #include <AP_Motors.h>
 #include <AC_PID.h>
 #include <AC_P.h>
+#include "AC_PID2.h"
+#include "APM_PI2.h"
 
 // To-Do: change the name or move to AP_Math?
 #define AC_ATTITUDE_CONTROL_DEGX100 5729.57795f                   // constant to convert from radians to centi-degrees
@@ -74,6 +76,41 @@ public:
     //
     // initialisation functions
     //
+
+	void setAeroxoTiltrotorParameters(
+			APM_PI2& pi_stabilize_roll,
+			APM_PI2& pi_stabilize_pitch,
+			APM_PI2& pi_stabilize_yaw,
+
+			APM_PI2& pi_stabilize_roll_tilt,
+			APM_PI2& pi_stabilize_pitch_tilt,
+			APM_PI2& pi_stabilize_yaw_tilt,
+
+			AC_PID2&                  pid2_rate_roll,
+			AC_PID2&                  pid2_rate_pitch,
+			AC_PID2&                  pid2_rate_yaw,
+
+			AC_PID2&                  pid2_rate_roll_tilt,
+			AC_PID2&                  pid2_rate_pitch_tilt,
+			AC_PID2&                  pid2_rate_yaw_tilt
+		)
+	{
+		_pi_stabilize_roll=pi_stabilize_roll;
+		_pi_stabilize_pitch=pi_stabilize_pitch;
+		_pi_stabilize_yaw=pi_stabilize_yaw;
+
+		_pi_stabilize_roll_tilt=pi_stabilize_roll_tilt;
+		_pi_stabilize_pitch_tilt=pi_stabilize_pitch_tilt;
+		_pi_stabilize_yaw_tilt=pi_stabilize_yaw_tilt;
+
+		_pid2_rate_roll=pid2_rate_roll;
+		_pid2_rate_pitch=pid2_rate_pitch;
+		_pid2_rate_yaw=pid2_rate_yaw;
+
+		_pid2_rate_roll_tilt=pid2_rate_roll_tilt;
+		_pid2_rate_pitch_tilt=pid2_rate_pitch_tilt;
+		_pid2_rate_yaw_tilt=pid2_rate_yaw_tilt;
+	}
 
     // set_dt - sets time delta in seconds for all controllers (i.e. 100hz = 0.01, 400hz = 0.0025)
     void set_dt(float delta_sec);
@@ -258,6 +295,10 @@ protected:
     float rate_bf_to_motor_pitch(float rate_target_cds);
     virtual float rate_bf_to_motor_yaw(float rate_target_cds);
 
+
+	float aeroxo_rate_bf_to_motor_roll(float rate_target_cds);
+    float aeroxo_rate_bf_to_motor_pitch(float rate_target_cds);
+    float aeroxo_rate_bf_to_motor_yaw(float rate_target_cds);
     //
     // throttle methods
     //
@@ -275,6 +316,23 @@ protected:
     AC_PID&             _pid_rate_roll;
     AC_PID&             _pid_rate_pitch;
     AC_PID&             _pid_rate_yaw;
+
+
+	APM_PI2& _pi_stabilize_roll;
+	APM_PI2& _pi_stabilize_pitch;
+	APM_PI2& _pi_stabilize_yaw;
+
+	APM_PI2& _pi_stabilize_roll_tilt;
+	APM_PI2& _pi_stabilize_pitch_tilt;
+	APM_PI2& _pi_stabilize_yaw_tilt;
+
+	AC_PID2&                  _pid2_rate_roll;
+    AC_PID2&                  _pid2_rate_pitch;
+    AC_PID2&                  _pid2_rate_yaw;
+
+	AC_PID2&                  _pid2_rate_roll_tilt;
+    AC_PID2&                  _pid2_rate_pitch_tilt;
+    AC_PID2&                  _pid2_rate_yaw_tilt;
 
     // parameters
     AP_Float            _slew_yaw;              // maximum rate the yaw target can be updated in Loiter, RTL, Auto flight modes

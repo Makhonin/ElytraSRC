@@ -120,7 +120,7 @@ void LinuxRCOutput_Navio::set_freq(uint32_t chmask, uint16_t freq_hz)
     hal.i2c->writeRegister(PCA9685_ADDRESS, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT);
 
     /* Calculate and write prescale value to match frequency */
-    uint8_t prescale = round(24576000.f / 4096.f / freq_hz)  - 1;
+    uint8_t prescale = round(25000000.f / 4096.f / freq_hz)  - 1;
     hal.i2c->writeRegister(PCA9685_ADDRESS, PCA9685_RA_PRE_SCALE, prescale);
 
     /* Enable external clocking */
