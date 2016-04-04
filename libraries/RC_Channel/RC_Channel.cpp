@@ -175,6 +175,20 @@ RC_Channel::set_pwm_all(void)
     }
 }
 
+/*
+  call read() and set_pwm() on all channels
+ */
+void
+RC_Channel::set_pwm_throttle(int i)
+{
+	int16_t chpwm = rc_ch[i]->read();
+	if ((chpwm<1470)||(chpwm>1530)) //abs(chpwm-1500)>30
+	{
+		rc_ch[i]->f_control_in+=((float)chpwm-1500.0f)*0.001f;
+	}
+	rc_ch[i]->set_pwm(1500+rc_ch[i]->f_control_in);
+}
+
 // read input from APM_RC - create a control_in value, but use a 
 // zero value for the dead zone. When done this way the control_in
 // value can be used as servo_out to give the same output as input

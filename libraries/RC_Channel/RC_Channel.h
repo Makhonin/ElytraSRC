@@ -31,6 +31,7 @@ public:
         if (ch_out < RC_MAX_CHANNELS) {
             rc_ch[ch_out] = this;
         }
+		f_control_in=-400;
     }
 
     // used to get min/max/trim limit value based on _reverse
@@ -67,6 +68,12 @@ public:
     // read input from APM_RC - create a control_in value
     void        set_pwm(int16_t pwm);
     static void set_pwm_all(void);
+
+
+	//Aeroxo.
+	//To control from Xbox joystick
+	static void set_pwm_throttle(int i);
+
     void        set_pwm_no_deadzone(int16_t pwm);
 
     // return a limit PWM value
@@ -83,7 +90,7 @@ public:
 
     // value generated from PWM
     int16_t         control_in;
-
+	float f_control_in;
     int16_t         control_mix(float value);
 
     // current values to the servos - degrees * 100 (approx assuming servo is -45 to 45 degrees except [3] is 0 to 100

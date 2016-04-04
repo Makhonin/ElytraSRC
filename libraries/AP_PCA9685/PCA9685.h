@@ -30,7 +30,7 @@
 #include <AP_HAL_Empty.h>
 
 
-#define PCA9685_I2C_ADDRESS 0x38
+#define PCA9685_I2C_ADDRESS 0x67
 #define PCA9685_I2C_ADDRESS2 0x38
 #define PCA9685_I2C_BASE_ADDRESS 0x40
 
@@ -66,38 +66,92 @@
 
 extern const AP_HAL::HAL& hal;
 
-uint8_t writeRegg2(uint8_t reg,uint8_t data)
+class AeroxoTiltrotorPCA9685
+{
+public:
+	AeroxoTiltrotorPCA9685(){}
+	~AeroxoTiltrotorPCA9685(){}
+
+	uint8_t writeRegg0(uint8_t reg,uint8_t data)
+	{
+	  if (hal.i2c->writeRegister(PCA9685_I2C_ADDRESS , reg,data)!=0)
+	  {
+	   // hal.console->println("PCA9685 I2C connection error.");
+	  }
+	  return 0;
+	}
+
+	void initPCA9685()
+	{
+	  writeRegg0(PCA9685_MODE1,0x10);
+	  //uint32_t fr = 500000/4096-1;
+	  writeRegg0(PCA9685_PRESCALER,133);
+	  writeRegg0(PCA9685_MODE1,0x1);
+	  writeRegg0(PCA9685_MODE2,0x14&(~PCA9685_INVRT));
+
+	  for (uint8_t cn=0;cn!=16;cn++)
+	  {
+	  writeRegg0(LED_ON_L(cn),0);
+	  writeRegg0(LED_ON_H(cn),0);
+	  }
+
+	}
+
+	void setPWM(uint8_t num, uint16_t on,uint16_t off)
+	{
+	  writeRegg0(LED_ON_L(num),LOW_PART(on));
+	  writeRegg0(LED_ON_H(num),HIGH_PART(on));
+	  writeRegg0(LED_OFF_L(num),LOW_PART(off));
+	  writeRegg0(LED_OFF_H(num),HIGH_PART(off));
+	}
+
+	void setServo(uint8_t num, uint16_t pwm) //angle from 1000 to 2000
+	{
+	  // 4096 - 20 msecs
+	  // 4096/20 - 1 msec
+	  // 4096/10 - 2 msec
+	  uint32_t pwm2d = 4096*((uint32_t)pwm);
+	  pwm2d/=20000;
+	  //optimize
+	  //hal.console->printf("PWM2: %lu",pwm2d);
+	  //UNCOMMENT PLS
+	  writeRegg0(LED_OFF_L(num),LOW_PART(pwm2d));
+	  writeRegg0(LED_OFF_H(num),HIGH_PART(pwm2d));
+	}
+
+};
+
+/*uint8_t writeRegg0(uint8_t reg,uint8_t data)
 {
   if (hal.i2c->writeRegister(PCA9685_I2C_BASE_ADDRESS , reg,data)!=0)
   {
    // hal.console->println("PCA9685 I2C connection error.");
   }
+  return 0;
 }
 
 void initPCA9685()
 {
-  uint16_t led0on = 0x409;
-  uint16_t led0off = 0x1228;
-  writeRegg2(PCA9685_MODE1,0x10);
+  writeRegg0(PCA9685_MODE1,0x10);
   //uint32_t fr = 500000/4096-1;
-  writeRegg2(PCA9685_PRESCALER,133);
-  writeRegg2(PCA9685_MODE1,0x1);
-  writeRegg2(PCA9685_MODE2,0x14&(~PCA9685_INVRT));
+  writeRegg0(PCA9685_PRESCALER,133);
+  writeRegg0(PCA9685_MODE1,0x1);
+  writeRegg0(PCA9685_MODE2,0x14&(~PCA9685_INVRT));
 
   for (uint8_t cn=0;cn!=16;cn++)
   {
-  writeRegg2(LED_ON_L(cn),0);
-  writeRegg2(LED_ON_H(cn),0);
+  writeRegg0(LED_ON_L(cn),0);
+  writeRegg0(LED_ON_H(cn),0);
   }
 
 }
 
 void setPWM(uint8_t num, uint16_t on,uint16_t off)
 {
-  writeRegg2(LED_ON_L(num),LOW_PART(on));
-  writeRegg2(LED_ON_H(num),HIGH_PART(on));
-  writeRegg2(LED_OFF_L(num),LOW_PART(off));
-  writeRegg2(LED_OFF_H(num),HIGH_PART(off));
+  writeRegg0(LED_ON_L(num),LOW_PART(on));
+  writeRegg0(LED_ON_H(num),HIGH_PART(on));
+  writeRegg0(LED_OFF_L(num),LOW_PART(off));
+  writeRegg0(LED_OFF_H(num),HIGH_PART(off));
 }
 
 void setServo(uint8_t num, uint16_t pwm) //angle from 1000 to 2000
@@ -115,6 +169,6 @@ void setServo(uint8_t num, uint16_t pwm) //angle from 1000 to 2000
   //UNCOMMENT PLS
   //writeRegg2(LED_OFF_L(num),LOW_PART(pwm2d));
   //writeRegg2(LED_OFF_H(num),HIGH_PART(pwm2d));
-}
+}*/
 
 #endif 

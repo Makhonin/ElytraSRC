@@ -64,3 +64,5 @@ LIBRARIES += AP_Parachute
 LIBRARIES += AP_LandingGear
 LIBRARIES += AP_Terrain
 LIBRARIES += AP_PCA9685
+LIBRARIES += tinyxml
+LIBRARIES += ElytraConfigurator

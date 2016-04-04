@@ -15,7 +15,7 @@
 /// @brief	Object managing one PID2 control
 class AC_PID2 {
 public:
-
+	//AC_PID2(){}
     /// Constructor for PID2 that saves its settings to EEPROM
     ///
     /// @note	PID2s must be named to avoid either multiple parameters with the

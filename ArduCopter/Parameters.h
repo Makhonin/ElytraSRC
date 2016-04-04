@@ -467,9 +467,9 @@ public:
 		//Conversion
 	float               p_conversion=1500.0f;
 	//Servo parameters
-	int32_t roll_angle2;
-	int32_t yaw_angle2;
-	int32_t pitch_angle2;
+	int32_t roll_angle2=0;
+	int32_t yaw_angle2=0;
+	int32_t pitch_angle2=0;
 
 
     AP_Int16                rc_speed; // speed of fast RC Channels in Hz

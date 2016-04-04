@@ -162,11 +162,15 @@ void Copter::setup()
     // setup storage layout for copter
     StorageManager::set_layout_copter();
 
+	//Aeroxo PCA Servo-s
+	//g.p_conversion=1000;
+	pcaTilt.initPCA9685();
+	
     init_ardupilot();
-cliSerial->print_P(PSTR("OK init_ardupilot()\n"));
+	cliSerial->print_P(PSTR("OK init_ardupilot()\n"));
     // initialise the main loop scheduler
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
-cliSerial->print_P(PSTR("Scheduler OK()\n"));
+	cliSerial->print_P(PSTR("Scheduler OK()\n"));
     // setup initial performance counters
     perf_info_reset();
     cliSerial->print_P(PSTR("perf_info_reset() OK()\n"));
@@ -295,7 +299,7 @@ void Copter::update_PWM_tiltrotor()
       
      
       
-      s1=constrain_int32(s1, 1000, 2000)+g.pitch_angle2;
+      /*s1=constrain_int32(s1, 1000, 2000)+g.pitch_angle2;
       s2=constrain_int32(s2, 1000, 2000)-g.pitch_angle2;
       s3=constrain_int32(s3, 1000, 2000)+g.pitch_angle2;
       s4=constrain_int32(s4, 1000, 2000)-g.pitch_angle2;
@@ -308,12 +312,12 @@ void Copter::update_PWM_tiltrotor()
       s1=constrain_int32(s1, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
       s2=constrain_int32(s2, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
       s3=constrain_int32(s3, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
-      s4=constrain_int32(s4, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
+      s4=constrain_int32(s4, 1000, 2000)-g.roll_angle2+g.yaw_angle2;*/
       
-      setServo(4,s1);
-      setServo(5,s2);
-      setServo(6,s3);
-      setServo(7,s4);
+      pcaTilt.setServo(4,s1);
+      pcaTilt.setServo(5,s2);
+      pcaTilt.setServo(6,s3);
+      pcaTilt.setServo(7,s4);
 }
 
 // rc_loops - reads user input from transmitter/receiver
@@ -500,7 +504,7 @@ void Copter::one_hz_loop()
     if (!motors.armed()) {
         // make it possible to change ahrs orientation at runtime during initial config
         ahrs.set_orientation();
-		attitude_control.relax_bf_rate_controller()
+		attitude_control.relax_bf_rate_controller();
         // check the user hasn't updated the frame orientation
         motors.set_frame_orientation(g.frame_orientation);
 

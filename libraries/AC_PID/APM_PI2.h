@@ -14,7 +14,7 @@
 /// @brief	Object managing one PI control
 class APM_PI2 {
 public:
-
+	//APM_PI2(){}
     /// Constructor for PI that saves its settings to EEPROM
     ///
     /// @note	PI must be named to avoid either multiple parameters with the

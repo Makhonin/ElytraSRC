@@ -64,10 +64,28 @@ public:
         _angle_boost(0),
         _acro_angle_switch(0)
 		{
+
 			AP_Param::setup_object_defaults(this, var_info);
 
 			// initialise flags
 			_flags.limit_angle_to_rate_request = true;
+
+
+				_pi_stabilize_roll=APM_PI2(4.8f,0,0.9f);
+				_pi_stabilize_pitch=APM_PI2(4.8f,0,0.9f);
+				_pi_stabilize_yaw=APM_PI2(0,0,0);
+
+				_pi_stabilize_roll_tilt=APM_PI2(0,0,0);
+				_pi_stabilize_pitch_tilt=APM_PI2(0,0,0);
+				_pi_stabilize_yaw_tilt=APM_PI2(0,0,0);
+
+				_pid2_rate_roll=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_pitch=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_yaw=AC_PID2(0,0,0,0);
+
+				_pid2_rate_roll_tilt=AC_PID2(0,0,0,0);
+				_pid2_rate_pitch_tilt=AC_PID2(0,0,0,0);
+				_pid2_rate_yaw_tilt=AC_PID2(0,0,0,0);
 		}
 
 	// empty destructor to suppress compiler warning
@@ -261,25 +279,38 @@ public:
     // user settable parameters
     static const struct AP_Param::GroupInfo var_info[];
 
+
 	int16_t get_conversion_function()
 	{
 	  int16_t conv;
 
-	  if (g.p_conversion<1100)
+	  if (m_Conv<1100)
 		return 0;
 
-	  if (g.p_conversion>1500)
+	  if (m_Conv>1500)
 		return 1000;
 
-	  conv = 1000-(1500-g.p_conversion)/4*10;  //Min 1100 Max 1900 -> (max-x)/800 Default 1900
+	  conv = 1000-(1500-m_Conv)/4*10;  //Min 1100 Max 1900 -> (max-x)/800 Default 1900
   
 	  conv =constrain_int16(conv, 0, 1000);
   
 	  return conv;
 	}
 
+	void set_conv(int16_t conv)
+	{
+		m_Conv=conv;
+	}
+
+	float aeroxo_rate_bf_to_motor_roll(float rate_target_cds);
+    float aeroxo_rate_bf_to_motor_pitch(float rate_target_cds);
+    float aeroxo_rate_bf_to_motor_yaw(float rate_target_cds);
 
 protected:
+
+	int16_t m_Conv;
+
+	
 
     // attitude control flags
     struct AttControlFlags {
@@ -314,9 +345,7 @@ protected:
     virtual float rate_bf_to_motor_yaw(float rate_target_cds);
 
 
-	float aeroxo_rate_bf_to_motor_roll(float rate_target_cds);
-    float aeroxo_rate_bf_to_motor_pitch(float rate_target_cds);
-    float aeroxo_rate_bf_to_motor_yaw(float rate_target_cds);
+	
     //
     // throttle methods
     //
@@ -336,21 +365,21 @@ protected:
     AC_PID&             _pid_rate_yaw;
 
 
-	APM_PI2& _pi_stabilize_roll;
-	APM_PI2& _pi_stabilize_pitch;
-	APM_PI2& _pi_stabilize_yaw;
+	APM_PI2 _pi_stabilize_roll;
+	APM_PI2 _pi_stabilize_pitch;
+	APM_PI2 _pi_stabilize_yaw;
 
-	APM_PI2& _pi_stabilize_roll_tilt;
-	APM_PI2& _pi_stabilize_pitch_tilt;
-	APM_PI2& _pi_stabilize_yaw_tilt;
+	APM_PI2 _pi_stabilize_roll_tilt;
+	APM_PI2 _pi_stabilize_pitch_tilt;
+	APM_PI2 _pi_stabilize_yaw_tilt;
 
-	AC_PID2&                  _pid2_rate_roll;
-    AC_PID2&                  _pid2_rate_pitch;
-    AC_PID2&                  _pid2_rate_yaw;
+	AC_PID2                  _pid2_rate_roll;
+    AC_PID2                  _pid2_rate_pitch;
+    AC_PID2                  _pid2_rate_yaw;
 
-	AC_PID2&                  _pid2_rate_roll_tilt;
-    AC_PID2&                  _pid2_rate_pitch_tilt;
-    AC_PID2&                  _pid2_rate_yaw_tilt;
+	AC_PID2                  _pid2_rate_roll_tilt;
+    AC_PID2                  _pid2_rate_pitch_tilt;
+    AC_PID2                  _pid2_rate_yaw_tilt;
 
     // parameters
     AP_Float            _slew_yaw;              // maximum rate the yaw target can be updated in Loiter, RTL, Auto flight modes

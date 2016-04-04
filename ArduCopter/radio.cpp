@@ -104,6 +104,8 @@ void Copter::read_radio()
         last_update_ms = tnow_ms;
         ap.new_radio_frame = true;
         RC_Channel::set_pwm_all();
+		RC_Channel::set_pwm_throttle(rcmap.throttle()-1);
+
 
         set_throttle_and_failsafe(channel_throttle->radio_in);
         set_throttle_zero_flag(channel_throttle->control_in);
@@ -118,8 +120,8 @@ void Copter::read_radio()
 
 		/* START TILTROTOR CODE */
 
-			uint16_t periods[8];
-			hal.rcin->read(periods,8);
+			//uint16_t periods[8];
+			//hal.rcin->read(periods,8);
 
 			const long CONV_THROTTLE = 1500;
 
@@ -131,18 +133,38 @@ void Copter::read_radio()
 			g.roll_angle2 = constrain_int32(g.roll_angle2, -250,250);
 			g.yaw_angle2 = constrain_int32(g.yaw_angle2, -166, 166);*/
 
-			if ( periods[7] > CONV_THROTTLE )
+			// If signal is more than 1700 (for noise protecting) return.
+			if ( hal.rcout->read(7) > CONV_THROTTLE+200 )
 			{
 			  g.p_conversion=1500.0f;
 			}
 			else
 			{
-			  //10.10.2014
-			  if (g.p_conversion > periods[7])
-			  {
-				g.p_conversion+=(periods[7]-g.p_conversion)*0.1f;
-			  }
+				// if 1500-1700 - stop.
+				// if <1500 - proceed.
+				if ( hal.rcout->read(7) < CONV_THROTTLE )
+				{
+					  //10.10.2014
+					  if (g.p_conversion >  hal.rcout->read(7)  )
+					  {
+						g.p_conversion+=( hal.rcout->read(7) - g.p_conversion)*0.1f;
+					  }
+				}
 			}  
+			attitude_control.set_conv(g.p_conversion);
+
+			g.roll_angle2 = (wrap_180_cd(attitude_control.aeroxo_rate_bf_to_motor_roll(0)))*
+							(1000-attitude_control.get_conversion_function())/4500*2;
+			
+			g.yaw_angle2 = (wrap_180_cd(attitude_control.aeroxo_rate_bf_to_motor_yaw(0)))*
+							(attitude_control.get_conversion_function())/4500*20;
+
+			g.pitch_angle2 = (wrap_180_cd(attitude_control.aeroxo_rate_bf_to_motor_pitch(0)))*
+							(1000-attitude_control.get_conversion_function())/4500*2;
+			
+			g.roll_angle2 = constrain_int32(g.roll_angle2, -250,250);
+			g.yaw_angle2 = constrain_int32(g.yaw_angle2, -166, 166);
+
 		/* END TILTROTOR CODE */
     }
 	else
