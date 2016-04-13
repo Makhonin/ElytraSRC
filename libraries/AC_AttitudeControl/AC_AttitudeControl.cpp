@@ -128,6 +128,9 @@ void AC_AttitudeControl::angle_ef_roll_pitch_rate_ef_yaw_smooth(float roll_angle
     // sanity check smoothing gain
     smoothing_gain = constrain_float(smoothing_gain,1.0f,50.0f);
 
+	_angle_ef_target2.x = roll_angle_ef;
+	_angle_ef_target2.y = pitch_angle_ef;
+
     // if accel limiting and feed forward enabled
     if ((_accel_roll_max > 0.0f) && _rate_bf_ff_enabled) {
         rate_change_limit = _accel_roll_max * _dt;
@@ -457,7 +460,7 @@ void AC_AttitudeControl::rate_controller_run()
 
 	_motors.set_roll(aeroxo_rate_bf_to_motor_roll(0));
     _motors.set_pitch(aeroxo_rate_bf_to_motor_pitch(0));
-    _motors.set_yaw(aeroxo_rate_bf_to_motor_yaw(0));
+    _motors.set_yaw(aeroxo_rate_bf_to_motor_yaw(0)*20);
 }
 
 //
@@ -659,7 +662,7 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_roll(float rate_target_cds)
     // calculate error and call pid controller
     rate_error = rate_target_cds - current_rate;
    
-	conv=1000.0f;
+	//conv=1000.0f;
 
 	//Vector3f targets = attitude_control.angle_ef_targets();
 
@@ -722,7 +725,7 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_pitch(float rate_target_cds)
     // calculate error and call pid controller
     rate_error = rate_target_cds - current_rate;
    
-	conv=1000.0f;
+	//conv=1000.0f;
 
 	angle_error = _angle_bf_error.y;
 
@@ -782,9 +785,9 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_yaw(float rate_target_cds)
     current_rate = (_ahrs.get_gyro().z * AC_ATTITUDE_CONTROL_DEGX100);
 
     // calculate error and call pid controller
-    rate_error = rate_target_cds - current_rate;
+    rate_error = _rate_ef_desired.z - current_rate;//rate_target_cds - current_rate;
    
-	conv=1000.0f;
+	//conv=1000.0f;
 
 	//angle_error = _angle_bf_error.z; //For future use
 

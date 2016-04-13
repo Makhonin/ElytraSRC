@@ -70,22 +70,39 @@ public:
 			// initialise flags
 			_flags.limit_angle_to_rate_request = true;
 
-
+				//INDOOR OR STAND USE SAFE!!!
+			/*
 				_pi_stabilize_roll=APM_PI2(4.8f,0,0.9f);
 				_pi_stabilize_pitch=APM_PI2(4.8f,0,0.9f);
-				_pi_stabilize_yaw=APM_PI2(0,0,0);
+				_pi_stabilize_yaw=APM_PI2(0.5f,0,0);
 
-				_pi_stabilize_roll_tilt=APM_PI2(0,0,0);
-				_pi_stabilize_pitch_tilt=APM_PI2(0,0,0);
+				_pi_stabilize_roll_tilt=APM_PI2(12.0f,0,6.0f);
+				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,6.0f);
 				_pi_stabilize_yaw_tilt=APM_PI2(0,0,0);
 
 				_pid2_rate_roll=AC_PID2(0.9f,6.4f,0);
 				_pid2_rate_pitch=AC_PID2(0.9f,6.4f,0);
-				_pid2_rate_yaw=AC_PID2(0,0,0,0);
+				_pid2_rate_yaw=AC_PID2(0,1.0f,0,0);
 
-				_pid2_rate_roll_tilt=AC_PID2(0,0,0,0);
-				_pid2_rate_pitch_tilt=AC_PID2(0,0,0,0);
-				_pid2_rate_yaw_tilt=AC_PID2(0,0,0,0);
+				_pid2_rate_roll_tilt=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_pitch_tilt=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_yaw_tilt=AC_PID2(0,16.0f,0,0);*/
+
+				_pi_stabilize_roll=APM_PI2(28.0f*0.8f,0,14.0f*0.8f);
+				_pi_stabilize_pitch=APM_PI2(28.0f*0.8f,0,14.0f*0.8f);
+				_pi_stabilize_yaw=APM_PI2(0.5f,0,0);
+
+				_pi_stabilize_roll_tilt=APM_PI2(12.0f,0,6.0f);
+				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,6.0f);
+				_pi_stabilize_yaw_tilt=APM_PI2(0,0,0);
+
+				_pid2_rate_roll=AC_PID2(14.0f*0.8f,38.0f*0.8f,0);
+				_pid2_rate_pitch=AC_PID2(14.0f*0.8f,38.0f*0.8f,0);
+				_pid2_rate_yaw=AC_PID2(0,1.0f,0,0);
+
+				_pid2_rate_roll_tilt=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_pitch_tilt=AC_PID2(0.9f,6.4f,0);
+				_pid2_rate_yaw_tilt=AC_PID2(0,16.0f,0,0);
 		}
 
 	// empty destructor to suppress compiler warning
@@ -392,6 +409,9 @@ protected:
     // To-Do: make rate targets a typedef instead of Vector3f?
     float               _dt;                    // time delta in seconds
     Vector3f            _angle_ef_target;       // angle controller earth-frame targets
+
+	Vector3f            _angle_ef_target2;       // angle controller earth-frame targets
+
     Vector3f            _angle_bf_error;        // angle controller body-frame error
     Vector3f            _rate_bf_target;        // rate controller body-frame targets
     Vector3f            _rate_ef_desired;       // earth-frame feed forward rates

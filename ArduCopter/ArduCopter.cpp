@@ -165,7 +165,8 @@ void Copter::setup()
 	//Aeroxo PCA Servo-s
 	//g.p_conversion=1000;
 	pcaTilt.initPCA9685();
-	
+	//elCfg.scanSetupFile();
+
     init_ardupilot();
 	cliSerial->print_P(PSTR("OK init_ardupilot()\n"));
     // initialise the main loop scheduler
@@ -292,16 +293,21 @@ void Copter::fast_loop()
 // Servo stab
 void Copter::update_PWM_tiltrotor()
 {
-	 int32_t s1 = (1500-g.p_conversion)*10/4+1000;
+
+	//FIXED for logic from Arduino version.
+	// May cause some problems in future.
+	//Please consider testing!!!
+
+	 int32_t s3 = (1500-g.p_conversion)*10/4+1000;
       int32_t s2 = (1500-g.p_conversion)*10/4+1000;
-      int32_t s3 = 2000-(1500-g.p_conversion)*10/4;
+      int32_t s1 = 2000-(1500-g.p_conversion)*10/4;
       int32_t s4 = 2000-(1500-g.p_conversion)*10/4;
       
-     
+     //No changes from this string for Arduino.
       
-      /*s1=constrain_int32(s1, 1000, 2000)+g.pitch_angle2;
-      s2=constrain_int32(s2, 1000, 2000)-g.pitch_angle2;
-      s3=constrain_int32(s3, 1000, 2000)+g.pitch_angle2;
+      s1=constrain_int32(s1, 1000, 2000)+g.pitch_angle2;
+      s2=constrain_int32(s2, 1000, 2000)+g.pitch_angle2;
+      s3=constrain_int32(s3, 1000, 2000)-g.pitch_angle2;
       s4=constrain_int32(s4, 1000, 2000)-g.pitch_angle2;
       
       //s1=constrain_int32(s1, 1000, 2000);
@@ -312,7 +318,7 @@ void Copter::update_PWM_tiltrotor()
       s1=constrain_int32(s1, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
       s2=constrain_int32(s2, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
       s3=constrain_int32(s3, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
-      s4=constrain_int32(s4, 1000, 2000)-g.roll_angle2+g.yaw_angle2;*/
+      s4=constrain_int32(s4, 1000, 2000)-g.roll_angle2+g.yaw_angle2;
       
       pcaTilt.setServo(4,s1);
       pcaTilt.setServo(5,s2);
@@ -372,7 +378,7 @@ void Copter::update_batt_compass(void)
 {
     // read battery before compass because it may be used for motor interference compensation
     read_battery();
-	update_PWM_tiltrotor();
+	//update_PWM_tiltrotor();
 
     if(g.compass_enabled) {
         // update compass with throttle value - used for compassmot
@@ -389,6 +395,7 @@ void Copter::update_batt_compass(void)
 // should be run at 10hz
 void Copter::ten_hz_logging_loop()
 {
+	update_PWM_tiltrotor();
     // log attitude data if we're not already logging at the higher rate
     if (should_log(MASK_LOG_ATTITUDE_MED) && !should_log(MASK_LOG_ATTITUDE_FAST)) {
         Log_Write_Attitude();

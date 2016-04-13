@@ -136,7 +136,8 @@ void Copter::read_radio()
 			// If signal is more than 1700 (for noise protecting) return.
 			if ( hal.rcout->read(7) > CONV_THROTTLE+200 )
 			{
-			  g.p_conversion=1500.0f;
+
+						g.p_conversion+=( 1500 - g.p_conversion)*0.1f;
 			}
 			else
 			{
