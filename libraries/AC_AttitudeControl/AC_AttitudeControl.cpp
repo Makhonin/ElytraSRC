@@ -668,13 +668,13 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_roll(float rate_target_cds)
 
 	angle_error = _angle_bf_error.x;
 
-	p = (_pi_stabilize_roll.kP() * angle_error*conv)+(_pi_stabilize_roll_tilt.kP() * angle_error*(1000-conv));
+	p = (_pi_stabilize_roll.kP() * angle_error*conv/1000.0f)+(_pi_stabilize_roll_tilt.kP() * angle_error*(1000-conv)/1000.0f);
 
-	d = (_pid2_rate_roll.kP() * rate_error*conv)+(_pid2_rate_roll_tilt.kP() * rate_error*(1000-conv));
+	d = (_pid2_rate_roll.kP() * rate_error*conv/1000.0f)+(_pid2_rate_roll_tilt.kP() * rate_error*(1000-conv)/1000.0f);
 
-	i = _pi_stabilize_roll.get_i((_pid2_rate_roll.kI() * angle_error*conv)+(_pid2_rate_roll_tilt.kI() * angle_error*(1000-conv)),_dt);
+	i = _pi_stabilize_roll.get_i((_pid2_rate_roll.kI() * angle_error*conv/1000.0f)+(_pid2_rate_roll_tilt.kI() * angle_error*(1000-conv)/1000.0f),_dt);
     // constrain output and return
-    return constrain_float((p+i+d)/1000.0f/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
+    return constrain_float((p+i+d)/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
 }
 
 // rate_bf_to_motor_pitch - ask the rate controller to calculate the motor outputs to achieve the target rate in centi-degrees / second
@@ -729,13 +729,14 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_pitch(float rate_target_cds)
 
 	angle_error = _angle_bf_error.y;
 
-	p = (_pi_stabilize_pitch.kP() * angle_error*conv)+(_pi_stabilize_pitch_tilt.kP() * angle_error*(1000-conv));
+	p = (_pi_stabilize_pitch.kP() * angle_error*conv/1000.0f)+(_pi_stabilize_pitch_tilt.kP() * angle_error*(1000-conv)/1000.0f);
 
-	d = (_pid2_rate_pitch.kP() * rate_error*conv)+(_pid2_rate_pitch_tilt.kP() * rate_error*(1000-conv));
+	d = (_pid2_rate_pitch.kP() * rate_error*conv/1000.0f)+(_pid2_rate_pitch_tilt.kP() * rate_error*(1000-conv)/1000.0f);
 
-	i = _pi_stabilize_pitch.get_i((_pid2_rate_pitch.kI() * angle_error*conv)+(_pid2_rate_pitch_tilt.kI() * angle_error*(1000-conv)),_dt);
+	i = _pi_stabilize_pitch.get_i((_pid2_rate_pitch.kI() * angle_error*conv/1000.0f)+(_pid2_rate_pitch_tilt.kI() * angle_error*(1000-conv)/1000.0f),_dt);
+	//i = _pi_stabilize_pitch.get_i(57000,0.04f);
     // constrain output and return
-    return constrain_float((p+i+d)/1000.0f/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
+    return constrain_float((p+i+d)/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
 }
 
 // rate_bf_to_motor_yaw - ask the rate controller to calculate the motor outputs to achieve the target rate in centi-degrees / second
@@ -791,13 +792,13 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_yaw(float rate_target_cds)
 
 	//angle_error = _angle_bf_error.z; //For future use
 
-	p = (_pi_stabilize_yaw.kP() * rate_error*conv)+(_pi_stabilize_yaw_tilt.kP() * rate_error*(1000-conv));
+	p = (_pi_stabilize_yaw.kP() * rate_error*conv/1000.0f)+(_pi_stabilize_yaw_tilt.kP() * rate_error*(1000-conv)/1000.0f);
 
-	i = _pi_stabilize_pitch.get_i((_pid2_rate_yaw.kI() * rate_error*conv)+(_pid2_rate_yaw_tilt.kI() * rate_error*(1000-conv)),_dt);
+	i = _pi_stabilize_yaw.get_i((_pid2_rate_yaw.kI() * rate_error*conv/1000.0f)+(_pid2_rate_yaw_tilt.kI() * rate_error*(1000-conv)/1000.0f),_dt);
 	
 	//p=i=0;
     // constrain output and return
-    return constrain_float((p+i)/1000.0f/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
+    return constrain_float((p+i)/57.0f, -AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX, AC_ATTITUDE_RATE_RP_CONTROLLER_OUT_MAX); //PID here
 }
 
 // accel_limiting - enable or disable accel limiting

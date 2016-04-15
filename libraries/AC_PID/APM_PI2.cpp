@@ -14,16 +14,31 @@ const AP_Param::GroupInfo APM_PI2::var_info[] PROGMEM = {
     AP_GROUPEND
 };
 
-int32_t APM_PI2::get_p(int32_t error)
+float APM_PI2::get_p(float error)
 {
     return (float)error * _kp;
 }
 
-int32_t APM_PI2::get_i(int32_t error, float dt)
+/*int32_t APM_PI2::get_i(int32_t error, float dt)
 {
 	_imax=350000;
     if(dt != 0) {
         _integrator += ((float)error) * dt;
+
+        if (_integrator < -_imax) {
+            _integrator = -_imax;
+        } else if (_integrator > _imax) {
+            _integrator = _imax;
+        }
+    }
+    return _integrator;
+}*/
+
+float APM_PI2::get_i(float error, float dt)
+{
+	_imax=350000;
+    if(dt != 0) {
+        _integrator += (error) * dt;
 
         if (_integrator < -_imax) {
             _integrator = -_imax;

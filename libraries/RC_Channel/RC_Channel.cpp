@@ -182,7 +182,7 @@ void
 RC_Channel::set_pwm_throttle(int i)
 {
 	int16_t chpwm = rc_ch[i]->read();
-	if ((chpwm<1470)||(chpwm>1530)) //abs(chpwm-1500)>30
+	if ((chpwm<1400)||(chpwm>1600)) //abs(chpwm-1500)>30
 	{
 		rc_ch[i]->f_control_in+=((float)chpwm-1500.0f)*0.001f;
 	}

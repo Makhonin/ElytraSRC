@@ -45,8 +45,8 @@ void Copter::stabilize_run()
     pilot_throttle_scaled = get_pilot_desired_throttle(channel_throttle->control_in);
 
     // call attitude controller
-    attitude_control.angle_ef_roll_pitch_rate_ef_yaw_smooth(target_roll, target_pitch, target_yaw_rate, get_smoothing_gain());
-
+    attitude_control.angle_ef_roll_pitch_rate_ef_yaw_smooth(target_roll/2.0f, target_pitch/2.0f, target_yaw_rate, get_smoothing_gain());
+	//attitude_control.angle_ef_roll_pitch_rate_ef_yaw_smooth(0, 0, 0, get_smoothing_gain());
     // body-frame rate controller is run directly from 100hz loop
 
     // output pilot's throttle

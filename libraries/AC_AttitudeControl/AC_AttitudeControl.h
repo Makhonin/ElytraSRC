@@ -88,21 +88,38 @@ public:
 				_pid2_rate_pitch_tilt=AC_PID2(0.9f,6.4f,0);
 				_pid2_rate_yaw_tilt=AC_PID2(0,16.0f,0,0);*/
 
-				_pi_stabilize_roll=APM_PI2(28.0f*0.8f,0,14.0f*0.8f);
-				_pi_stabilize_pitch=APM_PI2(28.0f*0.8f,0,14.0f*0.8f);
-				_pi_stabilize_yaw=APM_PI2(0.5f,0,0);
 
-				_pi_stabilize_roll_tilt=APM_PI2(12.0f,0,6.0f);
-				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,6.0f);
-				_pi_stabilize_yaw_tilt=APM_PI2(0,0,0);
+				/*_pi_stabilize_roll=APM_PI2(16.0f,0,0.0f); //
+				_pi_stabilize_pitch=APM_PI2(16.0f,0,0.0f); //
+				_pi_stabilize_yaw=APM_PI2(0.5f,0,0); //
 
-				_pid2_rate_roll=AC_PID2(14.0f*0.8f,38.0f*0.8f,0);
-				_pid2_rate_pitch=AC_PID2(14.0f*0.8f,38.0f*0.8f,0);
-				_pid2_rate_yaw=AC_PID2(0,1.0f,0,0);
+				_pi_stabilize_roll_tilt=APM_PI2(6.0f,0,0.0f);
+				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,0.0f);
+				_pi_stabilize_yaw_tilt=APM_PI2(1.0f,0,0);
 
-				_pid2_rate_roll_tilt=AC_PID2(0.9f,6.4f,0);
-				_pid2_rate_pitch_tilt=AC_PID2(0.9f,6.4f,0);
-				_pid2_rate_yaw_tilt=AC_PID2(0,16.0f,0,0);
+				_pid2_rate_roll=AC_PID2(6.0f,32.0f,0); //
+				_pid2_rate_pitch=AC_PID2(6.0f,32.0f,0); //
+				_pid2_rate_yaw=AC_PID2(0,1.0f,0); //
+
+				_pid2_rate_roll_tilt=AC_PID2(2.0f,12.0f,0);
+				_pid2_rate_pitch_tilt=AC_PID2(4.0f,24.0f,0);
+				_pid2_rate_yaw_tilt=AC_PID2(0,2.0f,0,0);*/
+
+				_pi_stabilize_roll=APM_PI2(16.0f,0,0.0f); //
+				_pi_stabilize_pitch=APM_PI2(16.0f,0,0.0f); //
+				_pi_stabilize_yaw=APM_PI2(0.5f,0,0); //
+
+				_pi_stabilize_roll_tilt=APM_PI2(6.0f,0,0.0f);
+				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,0.0f);
+				_pi_stabilize_yaw_tilt=APM_PI2(0.5f,0,0);
+
+				_pid2_rate_roll=AC_PID2(6.0f,32.0f,0); //
+				_pid2_rate_pitch=AC_PID2(6.0f,32.0f,0); //
+				_pid2_rate_yaw=AC_PID2(0,1.0f,0); //
+
+				_pid2_rate_roll_tilt=AC_PID2(2.0f,12.0f,0);
+				_pid2_rate_pitch_tilt=AC_PID2(4.0f,24.0f,0);
+				_pid2_rate_yaw_tilt=AC_PID2(0,1.0f,0,0);
 		}
 
 	// empty destructor to suppress compiler warning
