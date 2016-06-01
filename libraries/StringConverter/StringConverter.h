@@ -28,13 +28,10 @@ Torus Knot Software Ltd.
 */
 
 //Changed.
-#include <string>
-#include <sstream>
-
+#include "tinyxml.h"
 #ifndef __StringConverter_H__
 #define __StringConverter_H__
 
-typedef std::string String;
 typedef float Real;
 
 class StringConverter
@@ -42,34 +39,39 @@ class StringConverter
     public:
 
 
-        static Real parseReal(const String& val);
+		static const char* getAttrib(TiXmlElement *XMLNode, const char* parameter, const char* defaultValue = "");
+		static Real getAttribReal(TiXmlElement *XMLNode, const char* parameter, Real defaultValue = 0);
+		static bool getAttribBool(TiXmlElement *XMLNode, const char* parameter, bool defaultValue = false);
+		static long getAttribLong(TiXmlElement *XMLNode, const char* parameter, long defaultValue = 0);
+
+        static Real parseReal(const char* val);
         /** Converts a String to a Angle. 
         @returns
             0.0 if the value could not be parsed, otherwise the Angle version of the String.
         */
        
-        static int parseInt(const String& val);
+        static int parseInt(const char* val);
         /** Converts a String to a whole number. 
         @returns
             0.0 if the value could not be parsed, otherwise the numeric version of the String.
         */
-        static unsigned int parseUnsignedInt(const String& val);
+        static unsigned int parseUnsignedInt(const char*  val);
         /** Converts a String to a whole number. 
         @returns
             0.0 if the value could not be parsed, otherwise the numeric version of the String.
         */
-        static long parseLong(const String& val);
+        static long parseLong(const char*  val);
         /** Converts a String to a whole number. 
         @returns
             0.0 if the value could not be parsed, otherwise the numeric version of the String.
         */
-        static unsigned long parseUnsignedLong(const String& val);
+        static unsigned long parseUnsignedLong(const char*  val);
         /** Converts a String to a boolean. 
         @remarks
             Returns true if case-insensitive match of the start of the string
 			matches "true", "yes" or "1", false otherwise.
         */
-        static bool parseBool(const String& val);
+        static bool parseBool(const char*  val);
 		/** Parses a Vector2 out of a String.
         @remarks
             Format is "x y" ie. 2 Real components, space delimited. Failure to parse returns

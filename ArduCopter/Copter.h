@@ -91,9 +91,9 @@
 #include <AP_BattMonitor.h>     // Battery monitor library
 #include <AP_BoardConfig.h>     // board configuration library
 #include <AP_Frsky_Telem.h>
-
+//Aeroxo
 #include <PCA9685.h>
-//#include <ElytraConfigurator.h>
+#include <ElytraConfigurator.h>
 
 #if SPRAYER == ENABLED
 #include <AC_Sprayer.h>         // crop sprayer library
@@ -132,7 +132,7 @@ private:
 
 	AeroxoTiltrotorPCA9685 pcaTilt;
 
-	//ElytraConfigurator elCfg;
+	ElytraConfigurator elCfg;
     // cliSerial isn't strictly necessary - it is an alias for hal.console. It may
     // be deprecated in favor of hal.console in later releases.
     AP_HAL::BetterStream* cliSerial;

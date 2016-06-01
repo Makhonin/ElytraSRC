@@ -16,6 +16,7 @@
 #include <AC_P.h>
 #include "AC_PID2.h"
 #include "APM_PI2.h"
+#include "ElytraConfigurator.h"
 
 // To-Do: change the name or move to AP_Math?
 #define AC_ATTITUDE_CONTROL_DEGX100 5729.57795f                   // constant to convert from radians to centi-degrees
@@ -105,13 +106,13 @@ public:
 				_pid2_rate_pitch_tilt=AC_PID2(4.0f,24.0f,0);
 				_pid2_rate_yaw_tilt=AC_PID2(0,2.0f,0,0);*/
 
-				_pi_stabilize_roll=APM_PI2(16.0f,0,0.0f); //
-				_pi_stabilize_pitch=APM_PI2(16.0f,0,0.0f); //
-				_pi_stabilize_yaw=APM_PI2(0.5f,0,0); //
+				_pi_stabilize_roll=APM_PI2(16.0f,0,350000); //
+				_pi_stabilize_pitch=APM_PI2(16.0f,0,350000); //
+				_pi_stabilize_yaw=APM_PI2(0.5f,0,350000); //
 
-				_pi_stabilize_roll_tilt=APM_PI2(6.0f,0,0.0f);
-				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,0.0f);
-				_pi_stabilize_yaw_tilt=APM_PI2(0.5f,0,0);
+				_pi_stabilize_roll_tilt=APM_PI2(6.0f,0,350000);
+				_pi_stabilize_pitch_tilt=APM_PI2(12.0f,0,350000);
+				_pi_stabilize_yaw_tilt=APM_PI2(0.5f,0,350000);
 
 				_pid2_rate_roll=AC_PID2(6.0f,32.0f,0); //
 				_pid2_rate_pitch=AC_PID2(6.0f,32.0f,0); //
@@ -128,6 +129,28 @@ public:
     //
     // initialisation functions
     //
+
+	void loadAeroxoTiltrotorParameters(ElytraConfigurator &elCfg)
+	{
+		if (elCfg.getOkLoad())
+		{
+				_pi_stabilize_roll=APM_PI2(elCfg.getPRoll(),0,elCfg.getIMaxRoll()); //
+				_pi_stabilize_pitch=APM_PI2(elCfg.getPPitch(),0,elCfg.getIMaxPitch()); //
+				_pi_stabilize_yaw=APM_PI2(elCfg.getPYaw(),0,elCfg.getIMaxYaw()); //
+
+				_pi_stabilize_roll_tilt=APM_PI2(elCfg.getPRollTilt(),0,elCfg.getIMaxRoll());
+				_pi_stabilize_pitch_tilt=APM_PI2(elCfg.getPPitchTilt(),elCfg.getIMaxPitch());
+				_pi_stabilize_yaw_tilt=APM_PI2(elCfg.getPYawTilt(),0,elCfg.getIMaxYaw());
+
+				_pid2_rate_roll=AC_PID2(elCfg.getDRoll(),elCfg.getIRoll(),0); //
+				_pid2_rate_pitch=AC_PID2(elCfg.getDPitch(),elCfg.getIPitch(),0); //
+				_pid2_rate_yaw=AC_PID2(0,elCfg.getIYaw(),0); //
+
+				_pid2_rate_roll_tilt=AC_PID2(elCfg.getDRollTilt(),elCfg.getIRollTilt(),0); //
+				_pid2_rate_pitch_tilt=AC_PID2(elCfg.getDPitchTilt(),elCfg.getIPitchTilt(),0); //
+				_pid2_rate_yaw_tilt=AC_PID2(0,elCfg.getIYawTilt(),0); //
+		}
+	}
 
 	void setAeroxoTiltrotorParameters(
 			APM_PI2& pi_stabilize_roll,

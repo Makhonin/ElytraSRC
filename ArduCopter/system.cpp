@@ -274,6 +274,20 @@ cliSerial->print_P(PSTR("Ok38\n"));
     ins.set_raw_logging(should_log(MASK_LOG_IMU_RAW));
     ins.set_dataflash(&DataFlash);
 cliSerial->print_P(PSTR("Ok39\n"));
+
+cliSerial->print_P(PSTR("Scanning XML Elytra config...\n"));
+elCfg.scanSetupFile();
+attitude_control.loadAeroxoTiltrotorParameters(elCfg);
+
+if (elCfg.getOkLoad())
+{
+	 gcs_send_text_P(SEVERITY_LOW,PSTR("Elytra: loaded parameters from XML!"));
+}
+else
+{
+	gcs_send_text_P(SEVERITY_LOW,PSTR("Elytra: loaded default parameters!"));
+}
+
     cliSerial->print_P(PSTR("\nReady to FLY "));
 
     // flag that initialisation has completed

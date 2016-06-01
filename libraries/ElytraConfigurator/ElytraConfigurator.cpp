@@ -1,4 +1,6 @@
 #include "ElytraConfigurator.h"
+#include "StringConverter.h"
+
 
 
 ElytraConfigurator::ElytraConfigurator()
@@ -6,6 +8,9 @@ ElytraConfigurator::ElytraConfigurator()
 	stabSystem=0;
 	pp=pr=py=ip=ir=iy=dp=dr=dy=0;
 	ppt=prt=pyt=ipt=irt=iyt=dpt=drt=dyt=0;
+	imp=imr=imy=0;
+	c1=c2=c3=c4=p1=p2=p3=p4=0;
+	loadOk=false;
 }
 
 
@@ -14,104 +19,145 @@ ElytraConfigurator::~ElytraConfigurator()
 
 }
 
-void ElytraConfigurator::dump_to_stdout(TiXmlNode* pParent, unsigned int indent)
+/*void ElytraConfigurator::dump_to_stdout(TiXmlNode* pParent, unsigned int indent)
+{
+	
+}*/
+
+void ElytraConfigurator::setStabilizeSystem(const char* str)
 {
 	
 }
 
-void ElytraConfigurator::setStabilizeSystem(String str)
-{
-	if (str=="PID_SYSTEM")
-		stabSystem=PID_SYSTEM;
-	if (str=="PID_SYSTEM2")
-		stabSystem=PID_SYSTEM2;
-	if (str=="MANUAL")
-		stabSystem=MANUAL;
-	if (str=="FUZZY_PID")
-		stabSystem=FUZZY_PID;
-	if (str=="FUZZY_PID2")
-		stabSystem=FUZZY_PID2;
-	if (str=="FUZZY1")
-		stabSystem=FUZZY1;
-	if (str=="FUZZY2")
-		stabSystem=FUZZY2;
-	if (str=="FUZZY_NEURAL1")
-		stabSystem=FUZZY_NEURAL1;
-	if (str=="FUZZY_NEURAL2")
-		stabSystem=FUZZY_NEURAL2;
-}
-
 void ElytraConfigurator::scanSetupFile()
 {
+	//	TiXmlDocument   *SequenceDoc;
+	//TiXmlElement   *SequenceRoot;
 	TiXmlDocument doc("elytra.xml");
-	bool loadOkay = doc.LoadFile();
-	if (loadOkay)
-	{
-		//printf("Parsing settings from: %s:\n", "elytra.xml");
-		TiXmlElement* pElem = doc.FirstChildElement("params");
-		if (pElem)
+
+		bool loadOkay = doc.LoadFile();
+		if (loadOkay)
 		{
-			pElem = pElem->FirstChildElement("stab");
+			//printf("Parsing settings from: %s:\n", "elytra.xml");
+			TiXmlElement* pElem = doc.FirstChildElement("params");
 			if (pElem)
 			{
-				std::string type =  getAttrib(pElem, "type", "PID_SYSTEM");
-				//std::cout << type.c_str() << std::endl;
+				pElem = pElem->FirstChildElement("stab");
+				if (pElem)
+				{
+					const char* str =  StringConverter::getAttrib(pElem, (char*)"type", (char*)"PID_SYSTEM");
+
+					/*std::string str =  StringConverter::getAttrib(pElem, "type", "PID_SYSTEM");*/
+					if (str==(char*)"PID_SYSTEM")
+						stabSystem=PID_SYSTEM;
+					if (str==(char*)"PID_SYSTEM2")
+						stabSystem=PID_SYSTEM2;
+					if (str==(char*)"MANUAL")
+						stabSystem=MANUAL;
+					if (str==(char*)"FUZZY_PID")
+						stabSystem=FUZZY_PID;
+					if (str==(char*)"FUZZY_PID2")
+						stabSystem=FUZZY_PID2;
+					if (str==(char*)"FUZZY1")
+						stabSystem=FUZZY1;
+					if (str==(char*)"FUZZY2")
+						stabSystem=FUZZY2;
+					if (str==(char*)"FUZZY_NEURAL1")
+						stabSystem=FUZZY_NEURAL1;
+					if (str==(char*)"FUZZY_NEURAL2")
+						stabSystem=FUZZY_NEURAL2;
+					//setStabilizeSystem(type.c_str());
+					//std::cout << type.c_str() << std::endl;
+				}
+				pElem = doc.FirstChildElement("params");
+				pElem = pElem->FirstChildElement("pitch");
+				if (pElem)
+				{
+					pp=StringConverter::getAttribReal(pElem, (char*)"P", 0.0f);
+					ip=StringConverter::getAttribReal(pElem, (char*)"I", 0.0f);
+					dp=StringConverter::getAttribReal(pElem, (char*)"D", 0.0f);
+					ppt=StringConverter::getAttribReal(pElem, (char*)"P2", 0.0f);
+					ipt=StringConverter::getAttribReal(pElem, (char*)"I2", 0.0f);
+					dpt=StringConverter::getAttribReal(pElem, (char*)"D2", 0.0f);
+					imp=StringConverter::getAttribLong(pElem, (char*)"IMAX", 350000);
+				}
+				pElem = doc.FirstChildElement("params");
+				pElem = pElem->FirstChildElement("roll");
+				if (pElem)
+				{
+					pr=StringConverter::getAttribReal(pElem, (char*)"P", 0.0f);
+					ir=StringConverter::getAttribReal(pElem, (char*)"I", 0.0f);
+					dr=StringConverter::getAttribReal(pElem, (char*)"D", 0.0f);
+					prt=StringConverter::getAttribReal(pElem, (char*)"P2", 0.0f);
+					irt=StringConverter::getAttribReal(pElem, (char*)"I2", 0.0f);
+					drt=StringConverter::getAttribReal(pElem, (char*)"D2", 0.0f);
+					imr=StringConverter::getAttribLong(pElem, (char*)"IMAX", 350000);
+				}
+				pElem = doc.FirstChildElement("params");
+				pElem = pElem->FirstChildElement("yaw");
+				if (pElem)
+				{
+					py=StringConverter::getAttribReal(pElem, (char*)"P", 0.0f);
+					iy=StringConverter::getAttribReal(pElem, (char*)"I", 0.0f);
+					dy=StringConverter::getAttribReal(pElem, (char*)"D", 0.0f);
+					pyt=StringConverter::getAttribReal(pElem, (char*)"P2", 0.0f);
+					iyt=StringConverter::getAttribReal(pElem, (char*)"I2", 0.0f);
+					dyt=StringConverter::getAttribReal(pElem, (char*)"D2", 0.0f);
+					imy=StringConverter::getAttribLong(pElem, (char*)"IMAX", 350000);
+				}
 			}
-			pElem = pElem->FirstChildElement("pitch");
-			if (pElem)
-			{
-				pp=getAttribReal(pElem, "P", 0.0f);
-				ip=getAttribReal(pElem, "I", 0.0f);
-				dp=getAttribReal(pElem, "D", 0.0f);
-				ppt=getAttribReal(pElem, "P2", 0.0f);
-				ipt=getAttribReal(pElem, "I2", 0.0f);
-				dpt=getAttribReal(pElem, "D2", 0.0f);
-			}
-			pElem = pElem->FirstChildElement("roll");
-			if (pElem)
-			{
-				pr=getAttribReal(pElem, "P", 0.0f);
-				ir=getAttribReal(pElem, "I", 0.0f);
-				dr=getAttribReal(pElem, "D", 0.0f);
-				prt=getAttribReal(pElem, "P2", 0.0f);
-				irt=getAttribReal(pElem, "I2", 0.0f);
-				drt=getAttribReal(pElem, "D2", 0.0f);
-			}
-			pElem = pElem->FirstChildElement("yaw");
-			if (pElem)
-			{
-				py=getAttribReal(pElem, "P", 0.0f);
-				iy=getAttribReal(pElem, "I", 0.0f);
-				dy=getAttribReal(pElem, "D", 0.0f);
-				pyt=getAttribReal(pElem, "P2", 0.0f);
-				iyt=getAttribReal(pElem, "I2", 0.0f);
-				dyt=getAttribReal(pElem, "D2", 0.0f);
-			}
+			loadOk=true;
 		}
-	}
-	else
-	{
-		//printf("Failed to load file \"%s\"\n", "elytra.xml");
-	}
+		else
+		{
+			loadOk=false;
+			//printf("Failed to load file \"%s\"\n", "elytra.xml");
+		}
+	
+
 }
 
-String ElytraConfigurator::getAttrib(TiXmlElement *XMLNode, const String &parameter, const String &defaultValue)
+void ElytraConfigurator::scanBenchFile()
 {
-	if (XMLNode->Attribute(parameter.c_str()))
-		return XMLNode->Attribute(parameter.c_str());
-	else
-		return defaultValue;
+	//	TiXmlDocument   *SequenceDoc;
+	//TiXmlElement   *SequenceRoot;
+	TiXmlDocument doc("bench.xml");
+
+		bool loadOkay = doc.LoadFile();
+		if (loadOkay)
+		{
+			//printf("Parsing settings from: %s:\n", "elytra.xml");
+			TiXmlElement* pElem = doc.FirstChildElement("params");
+			if (pElem)
+			{
+				pElem = pElem->FirstChildElement("bench");
+				
+				if (pElem)
+				{
+					c1=StringConverter::getAttribLong(pElem, (char*)"c1", 0.0f);
+					c2=StringConverter::getAttribLong(pElem, (char*)"c2", 0.0f);
+					c3=StringConverter::getAttribReal(pElem, (char*)"c3", 0.0f);
+					c4=StringConverter::getAttribReal(pElem, (char*)"c4", 0.0f);
+					
+					p1=StringConverter::getAttribLong(pElem, (char*)"p1", 0.0f);
+					p2=StringConverter::getAttribLong(pElem, (char*)"p2", 0.0f);
+					p3=StringConverter::getAttribReal(pElem, (char*)"p3", 0.0f);
+					p4=StringConverter::getAttribReal(pElem, (char*)"p4", 0.0f);
+				}
+				
+			}
+			loadOk=true;
+		}
+		else
+		{
+			loadOk=false;
+			//printf("Failed to load file \"%s\"\n", "elytra.xml");
+		}
+	
+
 }
 
-Real ElytraConfigurator::getAttribReal(TiXmlElement *XMLNode, const String &parameter, Real defaultValue)
-{
-	return StringConverter::parseReal(getAttrib(XMLNode,parameter,"0"));
-}
 
-bool ElytraConfigurator::getAttribBool(TiXmlElement *XMLNode, const String &parameter, bool defaultValue)
-{
-	return getAttrib(XMLNode,parameter,"false")=="true";
-}
 
 int ElytraConfigurator::getStabilizeSystem()
 {
@@ -130,9 +176,9 @@ Real ElytraConfigurator::getDPitch(){return dp;}
 Real ElytraConfigurator::getDRoll(){return dr;}
 Real ElytraConfigurator::getDYaw(){return dy;}
 
-Real ElytraConfigurator::getPPitchTilt(){return pp;}
-Real ElytraConfigurator::getPRollTilt(){return pr;}
-Real ElytraConfigurator::getPYawTilt(){return py;}
+Real ElytraConfigurator::getPPitchTilt(){return ppt;}
+Real ElytraConfigurator::getPRollTilt(){return prt;}
+Real ElytraConfigurator::getPYawTilt(){return pyt;}
 
 Real ElytraConfigurator::getIPitchTilt(){return ipt;}
 Real ElytraConfigurator::getIRollTilt(){return irt;}
@@ -141,3 +187,19 @@ Real ElytraConfigurator::getIYawTilt(){return iyt;}
 Real ElytraConfigurator::getDPitchTilt(){return dpt;}
 Real ElytraConfigurator::getDRollTilt(){return drt;}
 Real ElytraConfigurator::getDYawTilt(){return dyt;}
+
+Real ElytraConfigurator::getIMaxPitch(){return imp;}
+Real ElytraConfigurator::getIMaxRoll(){return imr;}
+Real ElytraConfigurator::getIMaxYaw(){return imy;}
+
+bool ElytraConfigurator::getOkLoad(){return loadOk;}
+
+long ElytraConfigurator::getC1(){return c1;}
+long ElytraConfigurator::getC2(){return c2;}
+long ElytraConfigurator::getC3(){return c3;}
+long ElytraConfigurator::getC4(){return c4;}
+
+long ElytraConfigurator::getP1(){return p1;}
+long ElytraConfigurator::getP2(){return p2;}
+long ElytraConfigurator::getP3(){return p3;}
+long ElytraConfigurator::getP4(){return p4;}

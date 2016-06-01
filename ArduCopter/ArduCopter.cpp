@@ -165,7 +165,7 @@ void Copter::setup()
 	//Aeroxo PCA Servo-s
 	//g.p_conversion=1000;
 	pcaTilt.initPCA9685();
-	//elCfg.scanSetupFile();
+	//
 
     init_ardupilot();
 	cliSerial->print_P(PSTR("OK init_ardupilot()\n"));

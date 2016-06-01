@@ -786,7 +786,7 @@ float AC_AttitudeControl::aeroxo_rate_bf_to_motor_yaw(float rate_target_cds)
     current_rate = (_ahrs.get_gyro().z * AC_ATTITUDE_CONTROL_DEGX100);
 
     // calculate error and call pid controller
-    rate_error = _rate_ef_desired.z - current_rate;//rate_target_cds - current_rate;
+    rate_error = _rate_ef_desired.z - current_rate;//rate_target_cds - current_rate; NOOOOOOO!
    
 	//conv=1000.0f;
 

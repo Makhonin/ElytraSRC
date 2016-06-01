@@ -1,10 +1,8 @@
 #pragma once
 
-#include <string>
 #include "tinyxml.h"
-#include "StringConverter.h"
 
-
+//typedef float Real;
 
 enum { PID_SYSTEM, 
 	   PID_SYSTEM2, 
@@ -23,43 +21,56 @@ public:
 	ElytraConfigurator();
 	~ElytraConfigurator();
 	void scanSetupFile();
-	String getAttrib(TiXmlElement *XMLNode, const String &parameter, const String &defaultValue = "");
-	Real getAttribReal(TiXmlElement *XMLNode, const String &parameter, Real defaultValue = 0);
-	bool getAttribBool(TiXmlElement *XMLNode, const String &parameter, bool defaultValue = false);
-	
+	void scanBenchFile();
+	 bool getOkLoad();
+
 	int getStabilizeSystem();
 
-	inline float getPPitch();
-	inline float getPRoll();
-	inline float getPYaw();
+	 float getPPitch();
+	 float getPRoll();
+	 float getPYaw();
 
-	inline float getIPitch();
-	inline float getIRoll();
-	inline float getIYaw();
+	 float getIPitch();
+	 float getIRoll();
+	 float getIYaw();
 
-	inline float getDPitch();
-	inline float getDRoll();
-	inline float getDYaw();
+	 float getDPitch();
+	 float getDRoll();
+	 float getDYaw();
 
-	inline float getPPitchTilt();
-	inline float getPRollTilt();
-	inline float getPYawTilt();
+	 float getPPitchTilt();
+	 float getPRollTilt();
+	 float getPYawTilt();
 
-	inline float getIPitchTilt();
-	inline float getIRollTilt();
-	inline float getIYawTilt();
+	 float getIPitchTilt();
+	 float getIRollTilt();
+	 float getIYawTilt();
 
-	inline float getDPitchTilt();
-	inline float getDRollTilt();
-	inline float getDYawTilt();
+	 float getDPitchTilt();
+	 float getDRollTilt();
+	 float getDYawTilt();
+
+	 float getIMaxPitch();
+	 float getIMaxRoll();
+	 float getIMaxYaw();
+
+	 long getC1();
+	 long getC2();
+	 long getC3();
+	 long getC4();
+
+	 long getP1();
+	 long getP2();
+	 long getP3();
+	 long getP4();
 
 private:
-	void setStabilizeSystem(String str);
+	bool loadOk;
 	float pp,pr,py,ip,ir,iy,dp,dr,dy;
 	float ppt,prt,pyt,ipt,irt,iyt,dpt,drt,dyt;
-	void dump_to_stdout(TiXmlNode* pParent, unsigned int indent = 0);
-	TiXmlDocument   *SequenceDoc;
-	TiXmlElement   *SequenceRoot;
+	long c1,c2,c3,c4,p1,p2,p3,p4;
+	long imp,imr,imy;
+	void setStabilizeSystem(const char* str);
 	int stabSystem;
 };
 
